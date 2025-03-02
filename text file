@@ -1,0 +1,8 @@
+1. prismjs
+2. npm i react-simple-code-editor
+3. npm i axios (helps to intgrate the frontend with backend)
+4. npm i react-markdown(used to review the code sinnepts in correct order )
+
+
+5. for backend - npx nodemon.
+6. for frontend - npm run dev.
