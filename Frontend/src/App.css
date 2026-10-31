@@ -91,3 +91,21 @@ select:hover, .btn:hover:not(:disabled) { border-color: var(--accent); backgroun
 .header-actions { display: flex; align-items: center; gap: .6rem; }
 @keyframes fade { from { opacity: 0; } }
 @keyframes slide { from { transform: translateX(100%); } }
+
+/* splash / logo screen */
+.splash { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .6rem; cursor: pointer; text-align: center; user-select: none; outline: none; }
+.splash-logo { width: 120px; height: 120px; border-radius: 30px; display: grid; place-items: center;
+  font-size: 2.6rem; font-weight: 700; color: #0b0f1a; position: relative; margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); animation: float 3s ease-in-out infinite;
+  box-shadow: 0 20px 60px rgba(124,140,255,.45); transition: transform .25s; }
+.splash-logo::after { content: ""; position: absolute; inset: -10px; border-radius: 38px;
+  border: 2px solid var(--accent); animation: ring 2s ease-out infinite; }
+.splash:hover .splash-logo { transform: scale(1.08); }
+.splash h1 { font-size: 2rem; letter-spacing: .3px; }
+.splash p { color: var(--muted); }
+.splash-hint { margin-top: 1.2rem; font-size: .8rem; color: var(--muted); animation: pulse 1.8s infinite; }
+.app { animation: appIn .5s ease; }
+@keyframes float { 50% { transform: translateY(-10px); } }
+@keyframes ring { from { opacity: .7; transform: scale(1); } to { opacity: 0; transform: scale(1.35); } }
+@keyframes appIn { from { opacity: 0; transform: scale(.98); } }
