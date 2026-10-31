@@ -46,6 +46,7 @@ function App() {
   const [theme, setTheme] = useState(() => store.get("theme", "dark"));
   const [history, setHistory] = useState(() => store.get("review-history", []));
   const [showHistory, setShowHistory] = useState(false);
+  const [started, setStarted] = useState(false); // false = sirf logo screen
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -92,10 +93,10 @@ function App() {
 
   // Ctrl/Cmd + Enter se review
   useEffect(() => {
-    const onKey = (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") reviewCode(); };
+    const onKey = (e) => { if (started && (e.ctrlKey || e.metaKey) && e.key === "Enter") reviewCode(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [reviewCode]);
+  }, [reviewCode, started]);
 
   function changeLang(next) {
     // sample code hi hai to naye language ka sample dikhao, warna user ka code rehne do
@@ -121,6 +122,18 @@ function App() {
   const grammar = prism.languages[lang] || prism.languages.javascript;
   const lines = code.split("\n").length;
   const status = loading ? ["busy", "Reviewing…"] : error ? ["err", "Error"] : review ? ["ok", "Review ready"] : ["", "Ready"];
+
+  if (!started) {
+    return (
+      <div className="splash" role="button" tabIndex={0} onClick={() => setStarted(true)}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setStarted(true)}>
+        <div className="splash-logo">{"</>"}</div>
+        <h1>AI Code Reviewer</h1>
+        <p>Instant, Gemini-powered code review</p>
+        <span className="splash-hint">Click on the logo to open</span>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
