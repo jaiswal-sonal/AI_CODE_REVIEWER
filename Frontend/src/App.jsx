@@ -62,29 +62,58 @@ function App() {
     setReview(text);
 }
 
-  const reviewCode = useCallback(async () => {
-    if (loading || !code.trim()) return;
-    clearInterval(timerRef.current);
-    setLoading(true); setReview(""); setError("");
-    try {
-      const { data } = await axios.post(`${API_URL}/ai/get-review`, {
-        code: `Language: ${LANGUAGES[lang].label}\n\n${code}`,
-      });
-      const text = typeof data === "string" ? data : JSON.stringify(data);
-      typeOut(text);
-      setHistory((prev) => [
-        { id: Date.now(), time: new Date().toLocaleString(), lang, code, review: text },
-        ...prev,
-      ].slice(0, 20));
-    } catch (err) {
-      setError(typeof err.response?.data === "string"
-        ? err.response.data
-        : "Backend se connect nahi ho paya. Check karo ki server chal raha hai.");
-    } finally {
-      setLoading(false);
-    }
-  }, [code, lang, loading]);
+const reviewCode = async () => {
+  setReview("");
+  setLoading(true);
 
+  try {
+    const response = await fetch(
+      `${API_URL}/ai/get-review`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          code: code,
+          language: language
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Review request failed");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      const text = decoder.decode(value, {
+        stream: true
+      });
+
+      setReview((prev) => prev + text);
+    }
+
+    const remaining = decoder.decode();
+
+    if (remaining) {
+      setReview((prev) => prev + remaining);
+    }
+
+  } catch (error) {
+    console.error(error);
+    setReview("Error generating code review.");
+
+  } finally {
+    setLoading(false);
+  }
+};
   // Ctrl/Cmd + Enter se review
   useEffect(() => {
     const onKey = (e) => { if (started && (e.ctrlKey || e.metaKey) && e.key === "Enter") reviewCode(); };
