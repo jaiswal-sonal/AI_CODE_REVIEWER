@@ -58,15 +58,9 @@ function App() {
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
-  function typeOut(text) {
-    clearInterval(timerRef.current);
-    let index = 0;
-    timerRef.current = setInterval(() => {
-      index += 10;
-      setReview(text.slice(0, index));
-      if (index >= text.length) clearInterval(timerRef.current);
-    }, 15);
-  }
+ function typeOut(text) {
+    setReview(text);
+}
 
   const reviewCode = useCallback(async () => {
     if (loading || !code.trim()) return;
