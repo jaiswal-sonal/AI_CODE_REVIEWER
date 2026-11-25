@@ -42,7 +42,13 @@ const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL; // optional
 function buildModel(name) {
     return genAI.getGenerativeModel({
         model: name,
+
         systemInstruction: SYSTEM_PROMPT,
+
+        generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: 1200
+        }
     });
 }
 
