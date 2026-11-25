@@ -40,7 +40,7 @@ function buildModel(name) {
 
         generationConfig: {
             temperature: 0.2,
-            maxOutputTokens: 1200
+            maxOutputTokens: 1000
         }
     });
 }
@@ -50,7 +50,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // 503 (server busy) aur 429 (rate limit) temporary hote hain, inhe dobara try karna theek hai
 const isRetryable = (err) => err.status === 503 || err.status === 429;
 
-async function tryModel(name, prompt, attempts = 2) {
+async function tryModel(name, prompt, attempts = 1) {
     const model = buildModel(name);
     let lastError;
     for (let i = 0; i < attempts; i++) {
