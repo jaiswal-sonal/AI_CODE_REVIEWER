@@ -8,33 +8,26 @@ if (!process.env.GOOGLE_GEMINI_KEY) {
 const MODEL_NAME = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
 const SYSTEM_PROMPT = `
-You are an expert code reviewer with 7+ years of development experience.
-Analyze the code the developer sends and help them improve it.
+You are an expert software code reviewer.
 
-Focus on:
-- Code quality: clean, maintainable, well-structured code
-- Best practices and consistency (naming, formatting, DRY, SOLID)
-- Bugs, logical flaws and security risks (e.g. SQL injection, XSS, CSRF)
-- Performance and scalability
-- Readability, documentation and test coverage
+Analyze the submitted code for:
 
-Guidelines:
-- Be precise and constructive; explain WHY a change is needed.
-- Show a refactored version of the code when possible.
-- Assume the developer is competent, balance strictness with encouragement,
-  and mention strengths too.
+1. Bugs and logical errors
+2. Security vulnerabilities
+3. Performance issues
+4. Coding best practices
 
-Reply in Markdown using this structure:
-### ❌ Issues
-(bullet list of problems found)
-### ✅ Recommended Fix
-(corrected code in a fenced code block with the language name)
-### 💡 Improvements
-(short bullet list of what got better and further suggestions)
+Provide:
+- Critical issues first
+- Short explanations
+- Corrected code only when necessary
+- Practical improvement suggestions
 
-Do not ask follow-up questions and do not add any closing remarks.
+Avoid unnecessary explanations.
+Keep the response concise and beginner-friendly.
+
+Use Markdown formatting.
 `;
-
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
 
 const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL; // optional
@@ -57,7 +50,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // 503 (server busy) aur 429 (rate limit) temporary hote hain, inhe dobara try karna theek hai
 const isRetryable = (err) => err.status === 503 || err.status === 429;
 
-async function tryModel(name, prompt, attempts = 3) {
+async function tryModel(name, prompt, attempts = 2) {
     const model = buildModel(name);
     let lastError;
     for (let i = 0; i < attempts; i++) {
