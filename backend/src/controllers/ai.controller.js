@@ -27,3 +27,25 @@ module.exports.getReview = async (req, res) => {
         res.status(status).send(messages[status] || "Internal Server Error");
     }
 };
+export async function* generateReviewStream(code, language) {
+  const model = buildModel(MODEL_NAME);
+
+  const prompt = `
+    ${SYSTEM_PROMPT}
+
+    Programming Language: ${language}
+
+    Review this code:
+    ${code}
+  `;
+
+  const result = await model.generateContentStream(prompt);
+
+  for await (const chunk of result.stream) {
+    const text = chunk.text();
+
+    if (text) {
+      yield text;
+    }
+  }
+}
